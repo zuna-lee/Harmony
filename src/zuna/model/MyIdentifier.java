@@ -1,11 +1,13 @@
 package zuna.model;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyIdentifier implements Serializable  {
+public class MyIdentifier extends Element{
 
+	public MyIdentifier(){
+		super("", false);
+	}
 	/**
 	 * 
 	 */

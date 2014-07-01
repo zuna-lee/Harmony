@@ -1,17 +1,11 @@
 package zuna.model;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 
-public class MyParameter  implements Serializable {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -4163343036096635695L;
+public class MyParameter  extends Element{
 
 	private MyMethod parent;
 	
@@ -19,7 +13,7 @@ public class MyParameter  implements Serializable {
 	private String name;
 	
 	public MyParameter(MyMethod parent, String type, String name) {
-		super();
+		super("", false);
 		this.parent = parent;
 		this.type = type;
 		this.name = name;

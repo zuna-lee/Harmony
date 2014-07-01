@@ -73,7 +73,6 @@ import org.eclipse.jdt.core.dom.SynchronizedStatement;
 import org.eclipse.jdt.core.dom.ThisExpression;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
-import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclarationStatement;
 import org.eclipse.jdt.core.dom.TypeLiteral;
@@ -169,8 +168,6 @@ public class Repo {
 	public MyClass createClass(TypeDeclaration typeDeclaration, CompilationUnit cu, MyPackage parent) {
 		
 		String outterClass = "";
-		
-		//Project �����̱� ������ superClass�� superInterfaces�� ���߿� ��� �������
 		ASTNode typeParent = typeDeclaration.getParent();
 		while(typeParent != null && typeParent  instanceof TypeDeclaration) {
 			//inner class
@@ -189,6 +186,7 @@ public class Repo {
 				
 			}
 		}
+		
 		classList.put(fullName, newClass);
 		return newClass;
 	}
@@ -261,7 +259,7 @@ public class Repo {
 		
 		if (statement instanceof AssertStatement) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			AssertStatement assertStatement = (AssertStatement) statement;
 			
@@ -270,7 +268,7 @@ public class Repo {
 		}
 		else if (statement instanceof Block) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			Block block = (Block) statement;
 			
@@ -283,12 +281,12 @@ public class Repo {
 		}
 		else if (statement instanceof BreakStatement) {
 			/*
-			 * �Ϸ�, ���� ����
+			 * 占싹뤄옙, 占쏙옙占쏙옙 占쏙옙占쏙옙
 			 */
 		}
 		else if (statement instanceof ConstructorInvocation) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			ConstructorInvocation constructorInvocation = (ConstructorInvocation) statement;
 			
@@ -301,12 +299,12 @@ public class Repo {
 		}
 		else if (statement instanceof ContinueStatement) {
 			/*
-			 * �Ϸ�, ���� ����
+			 * 占싹뤄옙, 占쏙옙占쏙옙 占쏙옙占쏙옙
 			 */
 		}
 		else if (statement instanceof DoStatement) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			DoStatement doStatement = (DoStatement) statement;
 			
@@ -316,12 +314,12 @@ public class Repo {
 		}
 		else if (statement instanceof EmptyStatement) {
 			/*
-			 * �Ϸ�, ���� ����
+			 * 占싹뤄옙, 占쏙옙占쏙옙 占쏙옙占쏙옙
 			 */
 		}
 		else if (statement instanceof ExpressionStatement) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			ExpressionStatement expressionStatement = (ExpressionStatement) statement;
 			
@@ -329,7 +327,7 @@ public class Repo {
 		}
 		else if (statement instanceof ForStatement) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			ForStatement forStatement = (ForStatement) statement;
 			
@@ -353,7 +351,7 @@ public class Repo {
 		}
 		else if (statement instanceof IfStatement) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			IfStatement ifStatement = (IfStatement) statement;
 			
@@ -364,7 +362,7 @@ public class Repo {
 		}
 		else if (statement instanceof LabeledStatement) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			LabeledStatement labeledStatement = (LabeledStatement) statement;
 			
@@ -372,7 +370,7 @@ public class Repo {
 		}
 		else if (statement instanceof ReturnStatement) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			ReturnStatement returnStatement = (ReturnStatement) statement;
 			
@@ -380,7 +378,7 @@ public class Repo {
 		}
 		else if (statement instanceof SuperConstructorInvocation) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			SuperConstructorInvocation superConstructorInvocation = (SuperConstructorInvocation) statement;
 			
@@ -395,7 +393,7 @@ public class Repo {
 		}
 		else if (statement instanceof SwitchCase) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			SwitchCase switchCase = (SwitchCase) statement;
 			
@@ -403,7 +401,7 @@ public class Repo {
 		}
 		else if (statement instanceof SwitchStatement) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			SwitchStatement switchStatement = (SwitchStatement) statement;
 			
@@ -418,7 +416,7 @@ public class Repo {
 		}
 		else if (statement instanceof SynchronizedStatement) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			SynchronizedStatement synchronizedStatement = (SynchronizedStatement) statement;
 			
@@ -428,7 +426,7 @@ public class Repo {
 		}
 		else if (statement instanceof ThrowStatement) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			ThrowStatement throwStatement = (ThrowStatement) statement;
 			
@@ -436,7 +434,7 @@ public class Repo {
 		}
 		else if (statement instanceof TryStatement) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			TryStatement tryStatement = (TryStatement) statement;
 			
@@ -459,12 +457,12 @@ public class Repo {
 		}
 		else if (statement instanceof TypeDeclarationStatement) {
 			/*
-			 * ������ ����, �׽�Ʈ x
+			 * 占쏙옙占쏙옙占쏙옙 占쏙옙占쏙옙, 占쌓쏙옙트 x
 			 */
 		}
 		else if (statement instanceof VariableDeclarationStatement) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			VariableDeclarationStatement variableDeclarationStatement = (VariableDeclarationStatement) statement;
 			
@@ -479,7 +477,7 @@ public class Repo {
 		}
 		else if (statement instanceof WhileStatement) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			WhileStatement whileStatement = (WhileStatement) statement;
 			
@@ -489,7 +487,7 @@ public class Repo {
 		}
 		else if (statement instanceof EnhancedForStatement) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			EnhancedForStatement enhancedForStatement = (EnhancedForStatement) statement;
 			
@@ -509,12 +507,12 @@ public class Repo {
 		
 		if (expression instanceof Annotation) {
 			/*
-			 * ������ ����, �׽�Ʈ x
+			 * 占쏙옙占쏙옙占쏙옙 占쏙옙占쏙옙, 占쌓쏙옙트 x
 			 */
 		}
 		else if (expression instanceof ArrayAccess) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			ArrayAccess arrayAccess = (ArrayAccess) expression;
 			
@@ -523,7 +521,7 @@ public class Repo {
 		}
 		else if (expression instanceof ArrayCreation) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			ArrayCreation arrayCreation = (ArrayCreation) expression;
 			
@@ -531,7 +529,7 @@ public class Repo {
 		}
 		else if (expression instanceof ArrayInitializer) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			ArrayInitializer arrayInitializer = (ArrayInitializer) expression;
 			
@@ -544,7 +542,7 @@ public class Repo {
 		}
 		else if (expression instanceof Assignment) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			Assignment assignment = (Assignment) expression;
 			
@@ -553,12 +551,12 @@ public class Repo {
 		}
 		else if (expression instanceof BooleanLiteral) {
 			/*
-			 * �Ϸ�, ���� ����
+			 * 占싹뤄옙, 占쏙옙占쏙옙 占쏙옙占쏙옙
 			 */
 		}
 		else if (expression instanceof CastExpression) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			CastExpression castExpression = (CastExpression) expression;
 			
@@ -566,12 +564,12 @@ public class Repo {
 		}
 		else if (expression instanceof CharacterLiteral) {
 			/*
-			 * �Ϸ�, ���� ����
+			 * 占싹뤄옙, 占쏙옙占쏙옙 占쏙옙占쏙옙
 			 */
 		}
 		else if (expression instanceof ClassInstanceCreation) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			ClassInstanceCreation classInstanceCreation = (ClassInstanceCreation) expression;
 			
@@ -620,7 +618,7 @@ public class Repo {
 		}
 		else if (expression instanceof ConditionalExpression) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			ConditionalExpression conditionalExpression = (ConditionalExpression) expression;
 			
@@ -630,7 +628,7 @@ public class Repo {
 		}
 		else if (expression instanceof FieldAccess) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			FieldAccess fieldAccess = (FieldAccess) expression;
 			
@@ -640,7 +638,7 @@ public class Repo {
 		}
 		else if (expression instanceof InfixExpression) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			InfixExpression infixExpression = (InfixExpression) expression;
 			
@@ -656,12 +654,12 @@ public class Repo {
 		}
 		else if (expression instanceof InstanceofExpression) {
 			/*
-			 * ������ ����, �׽�Ʈ x
+			 * 占쏙옙占쏙옙占쏙옙 占쏙옙占쏙옙, 占쌓쏙옙트 x
 			 */
 		}
 		else if (expression instanceof MethodInvocation) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			MethodInvocation methodInvocation = (MethodInvocation) expression;
 
@@ -676,23 +674,23 @@ public class Repo {
 		}
 		else if (expression instanceof Name) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			extractIdentifier(list, (Name) expression);
 		}
 		else if (expression instanceof NullLiteral) {
 			/*
-			 * �Ϸ�, ���� ����
+			 * 占싹뤄옙, 占쏙옙占쏙옙 占쏙옙占쏙옙
 			 */
 		}
 		else if (expression instanceof NumberLiteral) {
 			/*
-			 * �Ϸ�, ���� ����
+			 * 占싹뤄옙, 占쏙옙占쏙옙 占쏙옙占쏙옙
 			 */
 		}
 		else if (expression instanceof ParenthesizedExpression) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			ParenthesizedExpression parenthesizedExpression = (ParenthesizedExpression) expression;
 			
@@ -700,7 +698,7 @@ public class Repo {
 		}
 		else if (expression instanceof PostfixExpression) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			PostfixExpression postfixExpression = (PostfixExpression) expression;
 			
@@ -708,7 +706,7 @@ public class Repo {
 		}
 		else if (expression instanceof PrefixExpression) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			PrefixExpression prefixExpression = (PrefixExpression) expression;
 			
@@ -716,12 +714,12 @@ public class Repo {
 		}
 		else if (expression instanceof StringLiteral) {
 			/*
-			 * �Ϸ�, ���� ����
+			 * 占싹뤄옙, 占쏙옙占쏙옙 占쏙옙占쏙옙
 			 */
 		}
 		else if (expression instanceof SuperFieldAccess) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			SuperFieldAccess superFieldAccess = (SuperFieldAccess) expression;
 			
@@ -729,7 +727,7 @@ public class Repo {
 		}
 		else if (expression instanceof SuperMethodInvocation) {
 			/*
-			 * �Ϸ�
+			 * 占싹뤄옙
 			 */
 			SuperMethodInvocation superMethodInvocation = (SuperMethodInvocation) expression;
 			
@@ -742,17 +740,17 @@ public class Repo {
 		}
 		else if (expression instanceof ThisExpression) {
 			/*
-			 * �Ϸ�, ���� ����
+			 * 占싹뤄옙, 占쏙옙占쏙옙 占쏙옙占쏙옙
 			 */
 		}
 		else if (expression instanceof TypeLiteral) {
 			/*
-			 * �Ϸ�, ���� ����
+			 * 占싹뤄옙, 占쏙옙占쏙옙 占쏙옙占쏙옙
 			 */
 		}
 		else if (expression instanceof VariableDeclarationExpression) {
 			/*
-			 * ������ ����, �׽�Ʈ x
+			 * 占쏙옙占쏙옙占쏙옙 占쏙옙占쏙옙, 占쌓쏙옙트 x
 			 */
 		}
 	}

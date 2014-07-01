@@ -11,9 +11,11 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 public class MyClass extends Element implements Cloneable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8111727541948467140L;
 	private MyPackage parent;
-	private HashSet<MyClass> associatedClasses = new HashSet<MyClass>();
-	private HashSet<MyClass> associatedLibClasses = new HashSet<MyClass>();
 	private HashSet<MyClass> usesClasses = new HashSet<MyClass>();
 	private HashSet<MyClass> usedClasses = new HashSet<MyClass>();
 	private TypeDeclaration declaration;
@@ -241,21 +243,6 @@ public class MyClass extends Element implements Cloneable{
 		}
 	}
 
-	public HashSet<MyClass> getAssociatedClasses() {
-		return associatedClasses;
-	}
-
-	public void addAssociatedClasses(MyClass associatedClass) {
-		this.associatedClasses.add(associatedClass);
-	}
-
-	public HashSet<MyClass> getAssociatedLibClasses() {
-		return associatedLibClasses;
-	}
-
-	public void addAssociatedLibClasses(MyClass libClass) {
-		this.associatedLibClasses.add(libClass);
-	}
 
 	public ArrayList<MyMethod> getOwnedMethods() {
 		return ownedMethods;
@@ -282,9 +269,6 @@ public class MyClass extends Element implements Cloneable{
 		}
 	}
 
-	public int getCBO() {
-		return associatedClasses.size();
-	}
 
 	public HashSet<MyClass> getUseClasses() {
 		// TODO Auto-generated method stub
