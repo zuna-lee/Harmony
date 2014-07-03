@@ -1,16 +1,15 @@
 package zuna.model;
 
-import java.io.Serializable;
 import java.util.HashMap;
 
 import org.eclipse.jdt.core.IPackageFragment;
 
-public class MyPackage extends Element  implements Serializable {
+public class MyPackage extends Element {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -90683809696221176L;
+	private static final long serialVersionUID = 6020323031399856763L;
 	private MyPackage parent = null;
 	private HashMap<String, MyPackage> packageChildren = new HashMap<String, MyPackage>();
 	private HashMap<String, MyClass> classChildren = new HashMap<String, MyClass>();

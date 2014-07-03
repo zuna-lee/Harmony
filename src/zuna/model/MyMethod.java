@@ -349,6 +349,10 @@ public class MyMethod extends Element implements Cloneable {
 		this.name = name;
 	}
 	
+	public String getName(){
+		return this.name;
+	}
+	
 	public MyMethod(String id, boolean lib) {
 		super(id, lib);
 	}
@@ -459,7 +463,7 @@ public class MyMethod extends Element implements Cloneable {
 
 	private static String makeNestedClassName(String qualifiedName) {
 
-		//parameter type�� inner class�� ���. ������ class�?
+		//parameter type占쏙옙 inner class占쏙옙 占쏙옙占� 占쏙옙占쏙옙占쏙옙 class占�
 		String[] classNames = qualifiedName.split("\\.");
 		if(classNames.length > 0) {
 			qualifiedName = classNames[classNames.length-1];			

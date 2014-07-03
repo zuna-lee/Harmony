@@ -18,15 +18,14 @@ public class ClassWrapper extends Wrapper{
 	}
 	
 	public void putEntity(String key, Element entity){
-		if(entity instanceof MyClass){
-		
+		try{
 			ArrayList<String> fields = new ArrayList<String>();
 			ArrayList<Object> values = new ArrayList<Object>();
 			MyClass o = (MyClass)entity;
-			this.getValues(values, o);
 			this.getFields(fields);
+			this.getValues(values, o);
 			
-			super.saveEntity(fields, values);
+			super.saveEntity(super.CLASS, fields, values);
 			super.saveRelationships(super.OWNED_METHOD, o.getID(), super.convert(o.getOwnedMethods()));
 			super.saveRelationships(super.OWNED_FIELD, o.getID(), super.convert(o.getOwendField()));
 			super.saveRelationships(super.USES_CLASS, o.getID(), super.convert(o.getUseClasses()));
@@ -35,41 +34,42 @@ public class ClassWrapper extends Wrapper{
 			super.saveRelationships(super.IMPLEMENTED_CLASS, o.getID(), super.convert(o.getImplementedClasses()));
 			super.saveRelationships(super.CHILD_CLASS, o.getID(), super.convert(o.getChildClasses()));
 			
-		}else{
-			return;
+		}catch (Exception e){
+			e.printStackTrace(System.err);
 		}
-		
+
 	}
 	
 	
 	private void getFields(ArrayList<String> fields) {
 		
 		fields.add("id");
-		fields.add("outterClassUri");
 		fields.add("se");
 		fields.add("ic");
+		fields.add("isAbstract");
+		fields.add("lib");
+		fields.add("outterClassUri");
 		fields.add("noOfCalls");
 		fields.add("icInheritance");
-		fields.add("isAbstract");
 		fields.add("isCompletelyCohesive");
 		fields.add("isEnum");
 		fields.add("isInterface");
-		fields.add("lib");
-		
+
 	}
 
 	private void getValues(ArrayList<Object> values, MyClass o) {
-		values.add(o.getID());
-		values.add(o.getOutterClassUri());
+		values.add("\"" + o.getID() + "\"");
 		values.add(o.getSe());
 		values.add(o.getIc());
+		values.add(o.isAbstract());
+		values.add(o.isLibrary());
+		values.add("\"" + o.getOutterClassUri()+ "\"");
 		values.add(o.getNoOfCalls());
 		values.add(o.getIcIninheritance());
-		values.add(o.isAbstract());
 		values.add(o.isCompletelyCohesive());
 		values.add(o.isEnumuration());
 		values.add(o.isInterface());
-		values.add(o.isLibrary());
+		
 	}
 	
 	public void getEntity(String key){

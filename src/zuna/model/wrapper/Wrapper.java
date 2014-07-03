@@ -2,6 +2,7 @@ package zuna.model.wrapper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,6 +10,7 @@ import java.util.HashSet;
 import zuna.model.Element;
 
 public abstract class Wrapper {
+	
 	
 	protected Connection conn;
 	
@@ -25,15 +27,72 @@ public abstract class Wrapper {
 	protected final String REFERED_FIELD = "REFERED_FIELD";
 	protected final String REFERED_METHOD = "REFERED_METHOD";
 	
+	protected final String CLASS = "CLASS";
+	protected final String METHOD = "METHOD";
+	protected final String FIELD = "FIELD";
+	protected final String PACKAGE = "PACKAGE";
+	protected final String PARAMETER = "PARAMETER";
+	protected final String IDENTIFIER = "IDENTIFIER";
+	
+	protected final String PACKAGE_CHILDREN = "PCAKGE_CHILDREN";
+	protected final String CLASS_CHILDREN = "CLASS_CHILDREN";
 	
 	protected Wrapper(Connection conn){
 		this.conn = conn;
 	}
 	
-	protected void saveEntity(ArrayList<String> fields, ArrayList<Object> values){
-		
-	}
+	protected void saveEntity(String type, ArrayList<String> fields, ArrayList<Object> values){
+		final String tableName = type;
+		try{
+			Statement stmt = conn.createStatement();
+			StringBuffer sb_f = new StringBuffer();
+			StringBuffer sb_v = new StringBuffer();
+			sb_f.append(" insert into " + tableName + "(");
+		    for(int idx = 0 ; idx < fields.size(); idx++)
+		    {
+		    	sb_f.append(fields.get(idx) + ", ");
+		    }
+		    sb_f.append(") ");
+		    
+		    sb_v.append(" values (");
+		    for(int idx = 0 ; idx < values.size(); idx++)
+		    {
+		    	sb_v.append(values.get(idx) + ", ");
+		    }
+		    sb_f.append(") ");
 
+		    String sql = sb_f.append(sb_v).toString();
+		    stmt.executeQuery(sql);
+		    stmt.close();
+		    
+	    }catch(Exception e){
+	     System.out.println("error -- " + e.getMessage());
+	    }
+	}	
+	
+	
+	protected void saveRelationships(String type, String master, ArrayList<String> relatedTo){
+		final String tableName = type;
+		try{
+			PreparedStatement pstmt = null;
+			StringBuffer sb = new StringBuffer();
+			sb.append(" insert into " + tableName + "(master, slave)");
+			sb.append(" values (?,?)");
+			pstmt = conn.prepareStatement(sb.toString());
+			
+		    for(String entityId: relatedTo){
+		    	pstmt.setString(0, master);
+		    	pstmt.setString(1, entityId);
+		    	pstmt.addBatch();
+		    }
+		    pstmt.executeBatch();
+		    pstmt.close();
+		          
+	    }catch(Exception e){
+	     System.out.println("error -- " + e.getMessage());
+	    }
+	}
+	
 	protected ArrayList<String> convert(HashMap<String, ?> elements){
 		ArrayList<String> relations = new ArrayList<String>();
 		for(String o: elements.keySet()){
@@ -62,22 +121,6 @@ public abstract class Wrapper {
 		}
 		
 		return relations;
-	}
-	
-	protected void saveRelationships(String type, String master, ArrayList<String> relationships){
-		final String tableName = type;
-		PreparedStatement pstmt;
-		
-		for(String entityId: relationships){
-			
-		}
-	}
-	
-	protected void saveRelationships(String type, String master, HashMap<String, Element> relationships){
-		final String tableName = type;
-		for(String relationship: relationships.keySet()){
-			
-		}
 	}
 	
 	public abstract void putEntity(String key, Element value);
