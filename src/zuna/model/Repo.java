@@ -2,6 +2,9 @@ package zuna.model;
 
 
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -83,6 +86,11 @@ import org.eclipse.jdt.core.dom.WhileStatement;
 
 import zuna.metric.classDS.InformationContents;
 import zuna.metric.classDS.InheritanceBasedDS;
+import zuna.model.wrapper.ClassWrapper;
+import zuna.model.wrapper.FieldWrapper;
+import zuna.model.wrapper.MethodWrapper;
+import zuna.model.wrapper.PackageWrapper;
+import zuna.model.wrapper.ParameterWrapper;
 import zuna.parser.visitor.MethodVisitor;
 
 
@@ -101,6 +109,12 @@ public class Repo {
 	public static int totPackageNumber;
 	public static int totClassNumber;
 	public static int totMethodNumber;
+	private ClassWrapper classWrapper;
+	private MethodWrapper methodWrapper;
+	private FieldWrapper fieldWrapper;
+	private PackageWrapper packageWrapper;
+	private ParameterWrapper parameterWrapper;
+	
 	
 	public Repo(String name) {
 		init();
@@ -187,7 +201,7 @@ public class Repo {
 			}
 		}
 		
-		classList.put(fullName, newClass);
+		this.classWrapper.putEntity(fullName, newClass);
 		return newClass;
 	}
 		
@@ -243,12 +257,13 @@ public class Repo {
 			newMethod.setParameters(parameters);
 			
 			for (MyParameter myParameter : parameters) {
-			
-				parameterList.put(myParameter.getName(), myParameter);
+				parameterWrapper.putEntity(myParameter.getName(), myParameter);
+//				parameterList.put(myParameter.getName(), myParameter);
 			}
 			
 			newMethod = this.setModifiers(md, newMethod, md.modifiers().iterator());
-			methodList.put(methodFullName, newMethod);
+			methodWrapper.putEntity(methodFullName, newMethod);
+//			methodList.put(methodFullName, newMethod);
 		}
 		
 		return newMethod;
@@ -883,9 +898,22 @@ public class Repo {
 	public void init() {
 		InformationContents.maxIC = 0.0;
 		InheritanceBasedDS.max = -1;
-		packageList.clear();
-		classList.clear();
-		methodList.clear();
+		
+		try {
+			Class.forName("org.sqlite.JDBC");
+			Connection conn = DriverManager.getConnection("jdbc:sqlite:test.db");
+			this.classWrapper = new ClassWrapper(conn);
+			this.packageWrapper = new PackageWrapper(conn);
+			this.methodWrapper = new MethodWrapper(conn);
+			this.fieldWrapper = new FieldWrapper(conn);
+			this.parameterWrapper = new ParameterWrapper(conn);
+			
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e){
+			e.printStackTrace();
+		}
+	    
 	}
 
 	public String getName() {
@@ -909,7 +937,8 @@ public class Repo {
 			String type = fd.getType().toString();
 			MyField newField = new MyField(name, type, classChild, fd);
 			classChild.addOwendField(newField);
-			fieldList.put(name, newField);
+			this.fieldWrapper.putEntity(name, newField);
+//			fieldList.put(name, newField);
 		}
 
 		for (MethodDeclaration md : typeDeclaration.getMethods()) {
@@ -917,7 +946,8 @@ public class Repo {
 			method = createMethod(md, classChild);
 			if(md.getBody() == null)
 				continue;
-			methodList.put(method.getID(), method);
+			methodWrapper.putEntity(method.getID(), method);
+//			methodList.put(method.getID(), method);
 		}
 	}
 
@@ -990,7 +1020,8 @@ public class Repo {
 					MyField f = repo.fieldList.get(fieldKey);
 					method.addReffedField(f);
 					f.addReferencingMethod(method);
-					repo.fieldList.put(fieldKey, f);
+					fieldWrapper.putEntity(fieldKey, f);
+//					repo.fieldList.put(fieldKey, f);
 				}
 			}
 			
@@ -1064,7 +1095,8 @@ public class Repo {
 		if(!contain(c, m)) c.addMethod(m);
 		if(!contain(p, c)) p.addClassChild(c);
 		
-		classList.put(c.getID(), c);
+		classWrapper.putEntity(c.getID(), c);
+//		classList.put(c.getID(), c);
 //		methodList.put(m.getID(), m);
 		return m;
 	}
@@ -1082,12 +1114,14 @@ public class Repo {
 				parent = tmp;
 				tmp+="."+name;
 			}
+			
 			MyPackage p = packageList.get(tmp);
 			
 			if(p==null)
 			{
 				p = new MyPackage(tmp, true);
-				packageList.put(p.getID(), p);
+				packageWrapper.putEntity(p.getID(), p);
+//				packageList.put(p.getID(), p);
 				MyPackage pp = packageList.get(parent);
 				pp.addPackageChild(p);
 				p.setParent(pp);
@@ -1161,7 +1195,8 @@ public class Repo {
 				}
 				element.setParent(parent); 
 			}
-			packageList.put(uri, element);
+			packageWrapper.putEntity(uri, element);
+//			packageList.put(uri, element);
 			if(element.getParent() != null) {
 				element.getParent().addPackageChild(element);
 			}
@@ -1233,7 +1268,8 @@ public class Repo {
 				
 			}
 		}
-		classList.put(fullName, newClass);
+		classWrapper.putEntity(fullName, newClass);
+//		classList.put(fullName, newClass);
 		return newClass;
 	} 
 }
