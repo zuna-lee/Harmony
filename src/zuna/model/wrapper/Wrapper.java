@@ -34,6 +34,11 @@ public abstract class Wrapper {
 	protected final String PARAMETER = "PARAMETER";
 	protected final String IDENTIFIER = "IDENTIFIER";
 	
+	protected final String CLASS_RELATION = "CLASS_RELATION";
+	protected final String METHOD_RELATION = "METHOD_RELATION";
+	protected final String FIELD_RELATION = "FIELD_RELATION";
+	protected final String PACKAGE_RELATION = "PACKAGE_RELATION";
+	
 	protected final String PACKAGE_CHILDREN = "PCAKGE_CHILDREN";
 	protected final String CLASS_CHILDREN = "CLASS_CHILDREN";
 	
@@ -123,6 +128,8 @@ public abstract class Wrapper {
 		return relations;
 	}
 	
+	protected abstract void dropTable();
+	protected abstract void createTable();
 	public abstract void putEntity(String key, Element value);
 	public abstract void getEntity(String key);
 	public abstract HashMap<String,?> getEntityList(String project);

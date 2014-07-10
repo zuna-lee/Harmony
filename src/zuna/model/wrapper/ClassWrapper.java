@@ -1,6 +1,7 @@
 package zuna.model.wrapper;
 
 import java.sql.Connection;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,6 +16,58 @@ public class ClassWrapper extends Wrapper{
 
 	public ClassWrapper(Connection conn){
 		super(conn);
+		this.dropTable();
+		this.createTable();
+	}
+	
+	protected void dropTable(){
+		try{ 
+			Statement stmt = conn.createStatement();
+			String sql = "Drop TABLE  "+super.CLASS;
+			stmt.executeUpdate(sql);
+		    stmt.close();
+	    } catch ( Exception e ) {
+	      
+	    }
+	}
+
+	protected void createTable(){
+		try{ 
+			Statement stmt = conn.createStatement();
+			String sql = "CREATE TABLE "+super.CLASS+
+	                   " (ID INT PRIMARY KEY     NOT NULL," +
+	                   " SE           DOUBLE    NOT NULL, " + 
+	                   " IC            DOUBLE     NOT NULL, " + 
+	                   " ISABSTRACT        BOOLEAN, " + 
+	                   " LIB        BOOLEAN, " +
+	                   " OUTTERCLASSURI        VARCHAR(200), " +
+	                   " NOOFCALL        INT, " +
+	                   " ICINHERITANCE        DOUBLE, " +
+	                   " ISCOMPLETELYCOHESIVE        BOOLEAN, " +
+	                   " ISENUM        BOOLEAN, " +
+	                   " ISINTERFACE        BOOLEAN)";
+			stmt.executeUpdate(sql);
+		    stmt.close();
+	    } catch ( Exception e ) {
+	      System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+	      System.exit(0);
+	    }
+	}
+	
+	private void getFields(ArrayList<String> fields) {
+		
+		fields.add("id");
+		fields.add("se");
+		fields.add("ic");
+		fields.add("isAbstract");
+		fields.add("lib");
+		fields.add("outterClassUri");
+		fields.add("noOfCalls");
+		fields.add("icInheritance");
+		fields.add("isCompletelyCohesive");
+		fields.add("isEnum");
+		fields.add("isInterface");
+
 	}
 	
 	public void putEntity(String key, Element entity){
@@ -37,25 +90,8 @@ public class ClassWrapper extends Wrapper{
 		}catch (Exception e){
 			e.printStackTrace(System.err);
 		}
-
 	}
 	
-	
-	private void getFields(ArrayList<String> fields) {
-		
-		fields.add("id");
-		fields.add("se");
-		fields.add("ic");
-		fields.add("isAbstract");
-		fields.add("lib");
-		fields.add("outterClassUri");
-		fields.add("noOfCalls");
-		fields.add("icInheritance");
-		fields.add("isCompletelyCohesive");
-		fields.add("isEnum");
-		fields.add("isInterface");
-
-	}
 
 	private void getValues(ArrayList<Object> values, MyClass o) {
 		values.add("\"" + o.getID() + "\"");
