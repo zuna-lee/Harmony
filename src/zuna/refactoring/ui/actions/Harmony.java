@@ -1,7 +1,11 @@
 package zuna.refactoring.ui.actions;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IAdaptable;
@@ -9,21 +13,21 @@ import org.eclipse.jdt.internal.core.CompilationUnit;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 
 import zuna.metric.classDS.ArchitectureBasedDS;
 import zuna.metric.classDS.InformationContents4System;
-import zuna.metric.coupling.CBO;
-import zuna.model.MyClass;
 import zuna.refactoring.ProjectAnalyzer;
-import zuna.util.Logger2File;
 
 @SuppressWarnings("restriction")
 public class Harmony implements IWorkbenchWindowActionDelegate {
 	private static IWorkbenchWindow window;
 	public static double th=21;
+	private static Class<?> task;
 	/**
 	 * The constructor.
 	 */
@@ -47,22 +51,38 @@ public class Harmony implements IWorkbenchWindowActionDelegate {
 		if (window != null)
 		{
 			try {
-	            // 10 is the workload, so in your case the number of files to copy
 				IStructuredSelection selection = (IStructuredSelection) window.getSelectionService().getSelection();
-				
 		        Object firstElement = selection.getFirstElement();
         		init();
-	            IProject project = (IProject)((IAdaptable)firstElement).getAdapter(IProject.class);
+        		
+        		IProject project = (IProject)((IAdaptable)firstElement).getAdapter(IProject.class);
 	            ProjectAnalyzer.firstElement = (IAdaptable)firstElement;
-	            ProjectAnalyzer.analyze(project);
+	            ProjectAnalyzer.url = project.getLocationURI().getPath().toString().substring(1);
+	            File dbFile = new File(ProjectAnalyzer.url + "\\" + project.getName() + ".db");
 	            
-	            InformationContents4System icCalcul = new InformationContents4System();
-	            icCalcul.calculateIC();
-	            new ArchitectureBasedDS();
-	            
-	            HashMap<String, MyClass> classList = ProjectAnalyzer.project.getClassList();
-	            System.out.println(classList.size());
-	            
+	            if(dbFile.exists()){
+	            	MessageBox dialog = new MessageBox(window.getShell(), SWT.ICON_QUESTION | SWT.OK| SWT.CANCEL);
+	        		dialog.setText("Select");
+	        		dialog.setMessage("The DB file of the project exists. \n Do you want to rebuild the project?");
+	        		int returnCode = dialog.open();
+	        		
+	        		if(returnCode==SWT.OK){
+	        			dbFile.delete();
+	        			this.analysis(project);
+	        			this.showMessage("Complete","Rebuild has been complete!");
+	        			//do something
+	        			this.doTask();
+	        		}else{
+	        			//do something
+	        			this.doTask();
+	        		}
+	            }else{
+	            	this.analysis(project);
+	            	this.showMessage("Complete","Rebuild has been complete!");
+	            	//do something
+	            	this.doTask();
+	            }
+        		
 	            
 			}catch(java.lang.NullPointerException e){
 				e.printStackTrace();
@@ -71,12 +91,38 @@ public class Harmony implements IWorkbenchWindowActionDelegate {
 			}
 		}
 	}
-
+	
+	private void doTask(){
+		try {
+			
+			URL bin = new File("C:\\Users\\zuna\\Documents\\GitHub\\APP-1\\bin").toURL();
+			Class<?> c = new URLClassLoader(new URL[] { bin }).loadClass("task.MetricTask");
+			Object o = c.newInstance();
+			Method m = c.getMethod("doTask", (Class[]) null);
+			m.invoke(o, (Object[]) null);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void analysis(IProject project){
+        ProjectAnalyzer.analyze(project);
+        InformationContents4System icCalcul = new InformationContents4System();
+        icCalcul.calculateIC();
+        new ArchitectureBasedDS();
+	}
     private void init(){
 		ProjectAnalyzer.project = null;
 		ProjectAnalyzer.firstElement=null;
 	}
     
+    private void showMessage(String title, String message){
+		MessageBox dialog2 = new MessageBox(window.getShell(), SWT.ICON_QUESTION | SWT.OK);
+		dialog2.setText(title);
+		dialog2.setMessage(message);
+		dialog2.open();
+	}
     
 	private String getClassID(CompilationUnit cu) {
 		String classID = cu.getPath().toString().replace(cu.getPackageFragmentRoot().getPath().toString() + "/", "");
@@ -116,8 +162,6 @@ public class Harmony implements IWorkbenchWindowActionDelegate {
 	public void init(IWorkbenchWindow window) {
 		this.window = window;
 	}
-	
-	
 	
 //	private HashMap<String, MyMethod> getRefactoredMode(Repo p1, Repo p2){
 //		ArrayList<MyMethod> diff = ASTParserUtil.findDifferences(p1, p2);

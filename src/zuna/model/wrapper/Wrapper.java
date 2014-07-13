@@ -1,103 +1,143 @@
 package zuna.model.wrapper;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import zuna.db.DBConnector;
 import zuna.model.Element;
 
 public abstract class Wrapper {
+
+	protected static final String CLASS = "CLASS";
+	protected static final String METHOD = "METHOD";
+	protected static final String FIELD = "FIELD";
+	protected static final String PACKAGE = "PACKAGE";
+	protected static final String PARAMETER = "PARAMETER";
+	protected static final String IDENTIFIER = "IDENTIFIER";
 	
+	protected static final String OWNED_METHOD = "OWNED_METHOD";
+	protected static final String OWNED_FIELD = "OWNED_FIELD";
+	protected static final String IMPLEMENTED_CLASS = "IMPLEMENTED_CLASS";
+	protected static final String INTERFACE = "INTERFACE";
+	protected static final String CHILD_CLASS = "CHILD_CLASS";
+	protected static final String USES_CLASS = "USES_CLASS";
+	protected static final String USED_CLASS = "USED_CLASS";
 	
-	protected Connection conn;
+	protected static final String FAN_OUT = "FAN_OUT";
+	protected static final String FAN_IN = "FAN_IN";
+	protected static final String REFERED_FIELD = "REFERED_FIELD";
+	protected static final String REFERED_METHOD = "REFERED_METHOD";
+	protected static final String OWNED_PARAMETER = "OWNED_PARAMETER";
 	
-	protected final String OWNED_METHOD = "OWNED_METHOD";
-	protected final String OWNED_FIELD = "OWNED_FIELD";
-	protected final String IMPLEMENTED_CLASS = "IMPLEMENTED_CLASS";
-	protected final String INTERFACE = "INTERFACE";
-	protected final String CHILD_CLASS = "CHILD_CLASS";
-	protected final String USES_CLASS = "USES_CLASS";
-	protected final String USED_CLASS = "USED_CLASS";
+	protected static final String PACKAGE_CHILDREN = "PCAKGE_CHILDREN";
+	protected static final String CLASS_CHILDREN = "CLASS_CHILDREN";
 	
-	protected final String FAN_OUT = "FAN_OUT";
-	protected final String FAN_IN = "FAN_IN";
-	protected final String REFERED_FIELD = "REFERED_FIELD";
-	protected final String REFERED_METHOD = "REFERED_METHOD";
-	
-	protected final String CLASS = "CLASS";
-	protected final String METHOD = "METHOD";
-	protected final String FIELD = "FIELD";
-	protected final String PACKAGE = "PACKAGE";
-	protected final String PARAMETER = "PARAMETER";
-	protected final String IDENTIFIER = "IDENTIFIER";
-	
-	protected final String CLASS_RELATION = "CLASS_RELATION";
-	protected final String METHOD_RELATION = "METHOD_RELATION";
-	protected final String FIELD_RELATION = "FIELD_RELATION";
-	protected final String PACKAGE_RELATION = "PACKAGE_RELATION";
-	
-	protected final String PACKAGE_CHILDREN = "PCAKGE_CHILDREN";
-	protected final String CLASS_CHILDREN = "CLASS_CHILDREN";
-	
-	protected Wrapper(Connection conn){
-		this.conn = conn;
-	}
 	
 	protected void saveEntity(String type, ArrayList<String> fields, ArrayList<Object> values){
 		final String tableName = type;
 		try{
-			Statement stmt = conn.createStatement();
+			Statement stmt = DBConnector.getConn().createStatement();
 			StringBuffer sb_f = new StringBuffer();
 			StringBuffer sb_v = new StringBuffer();
 			sb_f.append(" insert into " + tableName + "(");
 		    for(int idx = 0 ; idx < fields.size(); idx++)
 		    {
-		    	sb_f.append(fields.get(idx) + ", ");
+		    	if(idx==fields.size()-1){
+		    		sb_f.append(fields.get(idx) + ") ");
+		    	}else{
+		    		sb_f.append(fields.get(idx) + ", ");
+		    	}
+		    	
 		    }
-		    sb_f.append(") ");
 		    
 		    sb_v.append(" values (");
 		    for(int idx = 0 ; idx < values.size(); idx++)
 		    {
-		    	sb_v.append(values.get(idx) + ", ");
+		    	if(idx==values.size()-1){
+		    		sb_v.append(values.get(idx) + ") ");
+		    	}else{
+		    		sb_v.append(values.get(idx) + ", ");
+		    	}
+		    	
 		    }
-		    sb_f.append(") ");
-
+		    
 		    String sql = sb_f.append(sb_v).toString();
-		    stmt.executeQuery(sql);
+		    stmt.execute(sql);
 		    stmt.close();
 		    
 	    }catch(Exception e){
-	     System.out.println("error -- " + e.getMessage());
+//	    	System.out.println("error ---- " + tableName + "/" + e.getMessage());
 	    }
 	}	
 	
+	protected void cleanRelationTable(String tableName){
+		this.dropTable(tableName);
+		this.createRelationTable(tableName);
+	}
 	
-	protected void saveRelationships(String type, String master, ArrayList<String> relatedTo){
+	protected static void saveRelationship(String type, String owner, String ownee){
 		final String tableName = type;
 		try{
-			PreparedStatement pstmt = null;
+			Statement stmt = DBConnector.getConn().createStatement();
 			StringBuffer sb = new StringBuffer();
-			sb.append(" insert into " + tableName + "(master, slave)");
-			sb.append(" values (?,?)");
-			pstmt = conn.prepareStatement(sb.toString());
-			
-		    for(String entityId: relatedTo){
-		    	pstmt.setString(0, master);
-		    	pstmt.setString(1, entityId);
-		    	pstmt.addBatch();
-		    }
-		    pstmt.executeBatch();
-		    pstmt.close();
-		          
+			sb.append(" insert into " + tableName + "(master, slave) ");
+			sb.append(" values (\'"+owner+"\', \'"+ ownee+"\')");
+		    
+		    String sql = sb.toString();
+		    stmt.execute(sql);
+		    stmt.close();
+		    
 	    }catch(Exception e){
-	     System.out.println("error -- " + e.getMessage());
+	    	System.out.println("error ---- " + tableName + "/" + e.getMessage());
 	    }
 	}
 	
+	protected void saveRelationship(String type, String owner, ArrayList<String> ownees){
+		final String tableName = type;
+		try{
+			String sql = " insert into " + tableName + "(master, slave) values (?, ?)";
+			PreparedStatement pstmt = DBConnector.getConn().prepareStatement(sql);
+			
+			for(String ownee: ownees){
+				pstmt.setString(1, owner);
+				pstmt.setString(2, ownee);
+				pstmt.addBatch();
+			}
+			
+			pstmt.executeBatch();
+			pstmt.close();
+		    
+	    }catch(Exception e){
+	    	System.out.println("error ---- " + tableName + "/" + e.getMessage());
+	    }
+	}
+	
+	protected void dropTable(String tableName){
+		try{ 
+			Statement stmt = DBConnector.getConn().createStatement();
+			String sql = "Drop TABLE  "+tableName;
+			stmt.executeUpdate(sql);
+		    stmt.close();
+	    } catch ( java.sql.SQLException e ) {
+	    	
+	    }
+	}
+	private void createRelationTable(String tableName){
+		try{ 
+			Statement stmt = DBConnector.getConn().createStatement();
+			String sql = "CREATE TABLE "+tableName+
+	                   " (master varchar(200),"
+	                   + "slave varchar(200))";
+			stmt.executeUpdate(sql);
+		    stmt.close();
+	    } catch ( Exception e ) {
+	      System.err.println("==="+ e.getClass().getName() + ": " + e.getMessage() );
+	      System.exit(0);
+	    }
+	}
 	protected ArrayList<String> convert(HashMap<String, ?> elements){
 		ArrayList<String> relations = new ArrayList<String>();
 		for(String o: elements.keySet()){
@@ -121,6 +161,7 @@ public abstract class Wrapper {
 	protected ArrayList<String> convert(ArrayList<?> elements){
 		ArrayList<String> relations = new ArrayList<String>();
 		for(Object o: elements){
+			o.getClass().getName();
 			Element e = (Element) o;
 			relations.add(e.getID());
 		}
@@ -128,10 +169,25 @@ public abstract class Wrapper {
 		return relations;
 	}
 	
-	protected abstract void dropTable();
 	protected abstract void createTable();
 	public abstract void putEntity(String key, Element value);
 	public abstract void getEntity(String key);
 	public abstract HashMap<String,?> getEntityList(String project);
+
+	public void update(String tableName, String condition, String updateValue) {
+		try{ 
+			Statement stmt = DBConnector.getConn().createStatement();
+			String sql = "Update " + tableName +
+	                   " set superClass = \'"+ updateValue  + "\'" +
+	                   " where id = \'" + condition + "\'";
+			
+			System.out.println(sql);
+			stmt.executeUpdate(sql);
+		    stmt.close();
+	    } catch ( Exception e ) {
+	      System.err.println("==="+ e.getClass().getName() + ": " + e.getMessage() );
+	      e.printStackTrace();
+	    }
+	}
 	
 }

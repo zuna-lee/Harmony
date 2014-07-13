@@ -8,9 +8,7 @@ import zuna.model.MyIdentifier;
 
 public class IdentifierWrapper extends Wrapper{
 
-	public IdentifierWrapper(Connection conn){
-		super(conn);
-	}
+	
 	
 	public void putEntity(String key, Element value){
 		if(value instanceof MyIdentifier){
@@ -26,5 +24,11 @@ public class IdentifierWrapper extends Wrapper{
 	
 	public HashMap<String, MyIdentifier> getEntityList(String project){
 		return null;
+	}
+
+	@Override
+	protected void createTable() {
+		// TODO Auto-generated method stub
+		
 	}
 }

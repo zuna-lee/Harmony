@@ -56,12 +56,10 @@ public class EntityAnalyzerProgress implements IRunnableWithProgress{
 			int total = packages.length + 
 					this.iRepo.getMethodList().keySet().size()*2 + (this.iRepo.getClassList().keySet().size() * 4) +100;
 			
-			monitor.beginTask(this.iRepo.getName() + " is being analyzed, which may takes several minutes", total);
+			monitor.beginTask(this.iRepo.getName() + " is being analyzed, which may take several minutes", total);
 			int prog = 0;
 			this.analysisEntities(monitor, prog);
-			iRepo.getClass("org.jhotdraw.draw.Dimension2DDouble");
 			this.makeFanout(monitor, prog);
-			iRepo.getClass("org.jhotdraw.draw.LocatorLayouter");
 			this.makeFanin(monitor, prog);
 			this.makeInheritance(monitor, prog);
 			this.makeIDFTable(monitor, prog);
@@ -79,30 +77,31 @@ public class EntityAnalyzerProgress implements IRunnableWithProgress{
 	}
 	
 	private void analysisEntities(IProgressMonitor monitor, int prog) throws JavaModelException {
+		
+		
 		for (IPackageFragment mypackage : packages) {
+			
+			
 			if (mypackage.getKind() == IPackageFragmentRoot.K_SOURCE){
-				monitor.subTask(mypackage.getElementName() + "package is being analyzed");
-				
+				monitor.subTask(mypackage.getElementName() + " package is being analyzed");
+				ArrayList<MyClass> classes = new ArrayList<MyClass>();
+				MyPackage pack = iRepo.getPackage(mypackage.getElementName());
 				for (ICompilationUnit unit : mypackage.getCompilationUnits()) {
 					// Now create the AST for the ICompilationUnits
 					CompilationUnit parser = parse(unit);
-					
+					System.out.println(unit.getTypes()[0].getFullyQualifiedName());
 					AbstractTypeDeclarationVisitor typeVisitor = new AbstractTypeDeclarationVisitor();
-					
 					parser.accept(typeVisitor);
-					
 					ArrayList<TypeDeclaration> classType = typeVisitor.getTypes();
 					
-					MyPackage pack = iRepo.getPackage(mypackage.getElementName());
 	
 					for (TypeDeclaration typeDeclaration : classType) {
 						
 						try {
-							
-							iRepo.makeClassNode(pack, typeDeclaration, parser, mypackage);
+							MyClass c = iRepo.makeClassNode(pack, typeDeclaration, parser, mypackage);
+							classes.add(c);
 						}
 						catch (Exception e) {
-							
 							System.out.println("packages [" + mypackage.getElementName() + "." + mypackage.getKind() + "]");
 							System.out.println("Class [" + unit.getElementName() + "]");
 							
@@ -110,11 +109,11 @@ public class EntityAnalyzerProgress implements IRunnableWithProgress{
 						}
 					}
 					
-					for (EnumDeclaration enumDeclaration : typeVisitor.getEnums()) {
-						
+					for (EnumDeclaration enumDeclaration : typeVisitor.getEnums()) 
+					{
 						try {
-							
-							iRepo.makeEnumNode(iRepo, pack, enumDeclaration, mypackage);
+							MyClass c = iRepo.makeEnumNode(iRepo, pack, enumDeclaration, mypackage);
+							classes.add(c);
 						}
 						catch (Exception e) {
 							
@@ -125,7 +124,9 @@ public class EntityAnalyzerProgress implements IRunnableWithProgress{
 						}
 					}
 				}
+				
 				monitor.worked(++prog);
+				this.iRepo.packageWrapper.addClassChild(pack, classes);
 			}
 		}
 	}
@@ -133,16 +134,11 @@ public class EntityAnalyzerProgress implements IRunnableWithProgress{
 
 	private void makeFanout(IProgressMonitor monitor, int prog) {
 		
-		ArrayList<MyMethod> add = new ArrayList<MyMethod>();
 		for(String key:this.iRepo.getMethodList().keySet()){
 			monitor.subTask("Outgoing relationships of " +key+" are being analyzing");
 			monitor.worked(++prog);
 			MyMethod m = this.iRepo.getMethodList().get(key);
-			add.addAll(this.iRepo.makeFanOutList(this.iRepo, m, m.getMd()));
-		}
-		
-		for(MyMethod m: add){
-			this.iRepo.getMethodList().put(m.getID(), m);
+			this.iRepo.makeFanOutList(this.iRepo, m, m.getMd());
 		}
 		
 	}
@@ -186,22 +182,27 @@ public class EntityAnalyzerProgress implements IRunnableWithProgress{
 						MyClass superClass = this.iRepo.getClassList().get(itb.getQualifiedName());
 						if(superClass==null || !this.iRepo.getClassList().containsKey(superClass.getID()))
 							superClass = this.iRepo.getClassList().get("java.lang.Object");
-						c.setSuperClass(superClass);
+						iRepo.classWrapper.updateSuperClass(c, superClass);
 						superClass.addChildClasses(c);
 						
 						ITypeBinding[] its = c.getDeclaration().resolveBinding().getTypeDeclaration().getInterfaces();
+						ArrayList<MyClass> interfaces = new ArrayList<MyClass>();
 						
 						for(ITypeBinding t: its){
 							MyClass itfc = this.iRepo.getClass(t.getQualifiedName());
 							if(itfc!=null){
-								c.addInterface(itfc);
-								itfc.addImplementedClasses(c);
+								interfaces.add(itfc);
+//								c.addInterface(itfc);
+//								itfc.addImplementedClasses(c);
 							}
 						}
+						
+						iRepo.classWrapper.addInterfaces(c, interfaces);
 					}else{
 						if(!c.getID().equals("ROOT")){
-							c.setSuperClass(virtualNode);
-							virtualNode.addImplementedClasses(c);
+							iRepo.classWrapper.updateSuperClass(c, virtualNode);
+//							c.setSuperClass(virtualNode);
+//							virtualNode.addImplementedClasses(c);
 						}
 					}
 
@@ -212,8 +213,8 @@ public class EntityAnalyzerProgress implements IRunnableWithProgress{
 			}
 		}
 		
-		virtualNode.addChildClasses(this.iRepo.getClass("java.lang.Object"));
-		this.iRepo.getClass("java.lang.Object").setSuperClass(virtualNode);
+//		virtualNode.addChildClasses(this.iRepo.getClass("java.lang.Object"));
+//		this.iRepo.getClass("java.lang.Object").setSuperClass(virtualNode);
 	}
 	
 	

@@ -1,6 +1,5 @@
 package zuna.model;
 
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -12,6 +11,8 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SimpleName;
+
+import zuna.model.wrapper.MethodWrapper;
 
 
 public class MyMethod extends Element implements Cloneable {
@@ -236,9 +237,10 @@ public class MyMethod extends Element implements Cloneable {
 
 
 
-	public void addReffedField(MyField reffedField) {
-		this.reffedField.add(reffedField);
-	}
+//	public void addReffedField(MyField referredField) {
+////		this.reffedField.add(reffedField);
+//		MethodWrapper.addReferredField(this, referredField);
+//	}
 
 
 
@@ -338,9 +340,9 @@ public class MyMethod extends Element implements Cloneable {
 		this.parent = parent;
 		this.md = methodDecl;
 		super.setModifier(methodDecl.modifiers());
-		if(parent != null) {
-			parent.addMethod(this);
-		}
+//		if(parent != null) {
+//			parent.addMethod(this);
+//		}
 	}
 	
 	

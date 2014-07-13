@@ -4,6 +4,8 @@ import java.util.HashMap;
 
 import org.eclipse.jdt.core.IPackageFragment;
 
+import zuna.model.wrapper.PackageWrapper;
+
 public class MyPackage extends Element {
 
 	/**
@@ -34,16 +36,17 @@ public class MyPackage extends Element {
 	}
 
 	public void addPackageChild(MyPackage child) {
-		this.packageChildren.put(child.getID(), child);
+		PackageWrapper.addPackageChild(this, child);
 	}
 	
 	public HashMap<String, MyClass> getClassChildren() {
 		return classChildren;
 	}
 	
-	public void addClassChild(MyClass child) {
-		this.classChildren.put(child.getID(), child);
-	}
+//	public void addClassChild(MyClass child) {
+////		PackageWrapper.addClassChild(this, child);
+////		this.classChildren.put(child.getID(), child);
+//	}
 
 	public MyPackage getParent() {
 		return parent;

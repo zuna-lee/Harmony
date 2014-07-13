@@ -9,6 +9,8 @@ import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
+import zuna.model.wrapper.ClassWrapper;
+
 public class MyClass extends Element implements Cloneable{
 	
 	/**
@@ -54,14 +56,11 @@ public class MyClass extends Element implements Cloneable{
 
 	public MyClass(String fullName, TypeDeclaration declaration, CompilationUnit cu, MyPackage parent) {
 		super( fullName, parent.isLibrary());
-		
 		this.cu = cu;
 		this.declaration = declaration;
 		isAbstract = declaration.isInterface() || Modifier.isAbstract(declaration.getModifiers());		
 		isInterface = declaration.isInterface();
-		
 		this.setParent(parent);
-		
 	}
 	
 	public MyClass(String fullName, boolean lib) {
@@ -201,6 +200,14 @@ public class MyClass extends Element implements Cloneable{
 	}
 
 
+	public MyClass(String id, TypeDeclaration td, boolean isInterface) {
+		super(id, false);
+		this.declaration = td;
+		this.isInterface = isInterface;
+	}
+
+	
+	
 	public MyClass(ITypeBinding bindingClass, MyPackage parent) {
 		super(bindingClass.getQualifiedName(), parent.isLibrary());
 		isAbstract = bindingClass.isInterface() || Modifier.isAbstract(bindingClass.getModifiers());		
@@ -221,9 +228,9 @@ public class MyClass extends Element implements Cloneable{
 	
 	private void setParent(MyPackage parent) {
 		this.parent = parent;
-		if(this.parent != null) {
-			parent.addClassChild(this);
-		}
+//		if(this.parent != null) {
+//			parent.addClassChild(this);
+//		}
 	}
 	
 	public void setOutterClassUri(String uri) {
@@ -237,19 +244,8 @@ public class MyClass extends Element implements Cloneable{
 		this.owendField = owendField;
 	}
 
-	public void addOwendField(MyField field) {
-		if(!this.owendField.contains(field)){
-			this.owendField.add(field);
-		}
-	}
-
-
 	public ArrayList<MyMethod> getOwnedMethods() {
 		return ownedMethods;
-	}
-
-	public void addMethod(MyMethod ownedMethod) {
-		this.ownedMethods.add(ownedMethod);
 	}
 	
 	public void setOwnedMethods(ArrayList<MyMethod> ownedMethods) {

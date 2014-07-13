@@ -2,9 +2,6 @@ package zuna.model;
 
 
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -84,6 +81,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 
+import zuna.db.DBConnector;
 import zuna.metric.classDS.InformationContents;
 import zuna.metric.classDS.InheritanceBasedDS;
 import zuna.model.wrapper.ClassWrapper;
@@ -97,6 +95,7 @@ import zuna.parser.visitor.MethodVisitor;
 public class Repo {
 
 	private String name;
+	private String path;
 	private static String tmpPackageName;
 	private  HashMap<String, MyPackage> packageList = new HashMap<String, MyPackage>();
 	private  HashMap<String, MyClass> classList = new HashMap<String, MyClass>();  
@@ -109,16 +108,17 @@ public class Repo {
 	public static int totPackageNumber;
 	public static int totClassNumber;
 	public static int totMethodNumber;
-	private ClassWrapper classWrapper;
-	private MethodWrapper methodWrapper;
-	private FieldWrapper fieldWrapper;
-	private PackageWrapper packageWrapper;
-	private ParameterWrapper parameterWrapper;
+	public ClassWrapper classWrapper;
+	public MethodWrapper methodWrapper;
+	public FieldWrapper fieldWrapper;
+	public PackageWrapper packageWrapper;
+	public ParameterWrapper parameterWrapper;
 	
 	
-	public Repo(String name) {
-		init();
+	public Repo(String name, String path) {
 		this.name = name;
+		this.path = path;
+		init();
 	}
 	
 	
@@ -126,23 +126,9 @@ public class Repo {
 		return classesInSystem;
 	}
 
-
 	public void addClassesInSystem(String key){
 		this.classesInSystem.put(key, key);
 	}
-	
-	public void setPackageList(HashMap<String, MyPackage> packageList) {
-		this.packageList = packageList;
-	}
-	
-	public void setMethodList(HashMap<String, MyMethod> methodList) {
-		this.methodList = methodList;
-	}
-
-	public void setFieldList(HashMap<String, MyField> fieldList) {
-		this.fieldList = fieldList;
-	}
-
 	public HashMap<String, MyField> getFieldList() {
 		return fieldList;
 	}
@@ -163,6 +149,7 @@ public class Repo {
 				element.setParent(parent); 
 			}
 			packageList.put(uri, element);
+			packageWrapper.putEntity(uri, element);
 			if(element.getParent() != null) {
 				element.getParent().addPackageChild(element);
 			}
@@ -172,6 +159,7 @@ public class Repo {
 	
 	public void createProjectPackage(MyPackage root, String uri, IPackageFragment mypackage) {
 		packageList.put(root.getID(), root);
+		packageWrapper.putEntity(root.getID(), root);
 		MyPackage pack = createPackage(uri, mypackage);
 		if(!pack.getID().contains(".")){
 			pack.setParent(root);
@@ -197,11 +185,12 @@ public class Repo {
 			if(outterClass.compareTo("") != 0) {
 				//inner class
 				newClass.setOutterClassUri(parent.getID() + "." + outterClass.substring(0, outterClass.length()-1));
-				
 			}
 		}
 		
 		this.classWrapper.putEntity(fullName, newClass);
+		this.classList.put(newClass.getID(), new MyClass(newClass.getID(), newClass.getDeclaration(), newClass.isInterface()));
+		
 		return newClass;
 	}
 		
@@ -263,7 +252,7 @@ public class Repo {
 			
 			newMethod = this.setModifiers(md, newMethod, md.modifiers().iterator());
 			methodWrapper.putEntity(methodFullName, newMethod);
-//			methodList.put(methodFullName, newMethod);
+			methodList.put(methodFullName, newMethod);
 		}
 		
 		return newMethod;
@@ -898,22 +887,13 @@ public class Repo {
 	public void init() {
 		InformationContents.maxIC = 0.0;
 		InheritanceBasedDS.max = -1;
+		DBConnector.getConnection("jdbc:sqlite:" + path + "\\" + name +".db");
 		
-		try {
-			Class.forName("org.sqlite.JDBC");
-			Connection conn = DriverManager.getConnection("jdbc:sqlite:test.db");
-			this.classWrapper = new ClassWrapper(conn);
-			this.packageWrapper = new PackageWrapper(conn);
-			this.methodWrapper = new MethodWrapper(conn);
-			this.fieldWrapper = new FieldWrapper(conn);
-			this.parameterWrapper = new ParameterWrapper(conn);
-			
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (SQLException e){
-			e.printStackTrace();
-		}
-	    
+		classWrapper = new ClassWrapper();
+		methodWrapper = new MethodWrapper();
+		fieldWrapper = new FieldWrapper();
+		packageWrapper = new PackageWrapper();
+		parameterWrapper = new ParameterWrapper();
 	}
 
 	public String getName() {
@@ -921,7 +901,7 @@ public class Repo {
 	}
 
 	
-	public void makeClassNode(MyPackage pack, TypeDeclaration typeDeclaration, 
+	public MyClass makeClassNode(MyPackage pack, TypeDeclaration typeDeclaration, 
 			CompilationUnit cu, IPackageFragment mypackage) throws JavaModelException, Exception {
 		
 		
@@ -929,6 +909,7 @@ public class Repo {
 		MyMethod method;
 		classChild = createClass(typeDeclaration, cu, pack);
 		
+		ArrayList<MyField> ownedField = new ArrayList<MyField>();
 		for (FieldDeclaration fd : typeDeclaration.getFields()) {
 			
 			String[] names = fd.toString().split("\\=")[0].split(" ");
@@ -936,28 +917,31 @@ public class Repo {
 			name = name.replace("\n", "");
 			String type = fd.getType().toString();
 			MyField newField = new MyField(name, type, classChild, fd);
-			classChild.addOwendField(newField);
 			this.fieldWrapper.putEntity(name, newField);
-//			fieldList.put(name, newField);
+			this.fieldList.put(newField.getID(), newField);
+			ownedField.add(newField);
 		}
-
+		
+		this.classWrapper.addField(classChild, ownedField);
+		
+		ArrayList<MyMethod> ownedMethod = new ArrayList<MyMethod>();
 		for (MethodDeclaration md : typeDeclaration.getMethods()) {
-			
 			method = createMethod(md, classChild);
 			if(md.getBody() == null)
 				continue;
 			methodWrapper.putEntity(method.getID(), method);
-//			methodList.put(method.getID(), method);
+			ownedMethod.add(method);
 		}
+		
+		this.classWrapper.addMethod(classChild, ownedMethod);
+		return classChild;
 	}
 
 
-	public ArrayList<MyMethod> makeFanOutList(Repo repo, MyMethod method, MethodDeclaration md) {
+	public void makeFanOutList(Repo repo, MyMethod method, MethodDeclaration md) {
 		final ArrayList<MethodInvocation> methods = new ArrayList<MethodInvocation>();
 		final ArrayList<ClassInstanceCreation> objectCreation = new ArrayList<ClassInstanceCreation>();
 		final Hashtable<String, SimpleName> reference = new Hashtable<String, SimpleName>();
-		
-		ArrayList<MyMethod> add = new ArrayList<MyMethod>();
 		
 		md.accept(new ASTVisitor(){
 			
@@ -980,6 +964,9 @@ public class Repo {
 			}
 		});
 		
+		ArrayList<MyField> referredFields = new ArrayList<MyField>();
+		ArrayList<MyMethod> invokedMethods = new ArrayList<MyMethod>();
+		ArrayList<MyClass> usesClasses = new ArrayList<MyClass>();
 		
 		for(String key: reference.keySet()){
 			if(md.getParent() instanceof TypeDeclaration){
@@ -998,8 +985,8 @@ public class Repo {
 				String fieldKey = tmpPackageName + "." + type.getName() + "." + name;
 				if(repo.fieldList.containsKey(fieldKey)) {
 					MyField f = repo.fieldList.get(fieldKey);
-					method.addReffedField(f);
-					f.addReferencingMethod(method);
+					referredFields.add(f);
+					
 					repo.fieldList.put(fieldKey, f);
 				}
 			}else if(md.getParent() instanceof EnumDeclaration){
@@ -1018,27 +1005,28 @@ public class Repo {
 				String fieldKey = tmpPackageName + "." + type.getName() + "." + name;
 				if(repo.fieldList.containsKey(fieldKey)) {
 					MyField f = repo.fieldList.get(fieldKey);
-					method.addReffedField(f);
-					f.addReferencingMethod(method);
+					referredFields.add(f);
 					fieldWrapper.putEntity(fieldKey, f);
 //					repo.fieldList.put(fieldKey, f);
 				}
 			}
-			
 		}
+		this.methodWrapper.addReferredField(method, referredFields);
+		
+		
 		
 		for (MethodInvocation mdi : methods) {
 			try {
 				MyMethod m = methodList.get(MyMethod.makeMethodFullName(mdi.resolveMethodBinding()));
 				
 				if(m!=null) {
-					method.addFanOutMethod(m);
-					method.getParent().addUsesClasses(m.getParent());
+					invokedMethods.add(m);
+					usesClasses.add(m.getParent());
 				}else{
-					MyMethod addm = makeLibHierarchy(mdi);
-					method.addFanOutMethod(addm);
-					method.getParent().addUsesClasses(addm.getParent());
-					add.add(addm);
+//					MyMethod addm = makeLibHierarchy(mdi);
+//					method.addFanOutMethod(addm);
+//					method.getParent().addUsesClasses(addm.getParent());
+//					add.add(addm);
 				}
 				
 			} catch (NullPointerException | java.lang.NoSuchMethodError e) {
@@ -1047,59 +1035,55 @@ public class Repo {
 			}
 		}
 		
+		
 		for(ClassInstanceCreation creation: objectCreation){
 			String qualifiedName = this.getQualifiedName(creation.resolveConstructorBinding());
 			MyMethod constructor = repo.getMethodList().get(qualifiedName);
 			
 			if(constructor!=null){
-				method.addFanOutMethod(constructor);
-				method.getParent().addUsesClasses(constructor.getParent());
+				invokedMethods.add(constructor);
+				usesClasses.add(constructor.getParent());
 			}
 		}
 		
-		if(method.getFanOut().size()==0 && method.getReferencedField().size()==1 && method.getStatementCnt()==1){
-			method.setSupport(true);
-		}else{
-			method.setSupport(false);
-		}
-		
-		return add;
+		methodWrapper.addFanoutMethod(method, invokedMethods);
+		classWrapper.addUsesClasses(method.getParent(), usesClasses);
 	}
 	
 	
-	private MyMethod makeLibHierarchy(MethodInvocation inv){
-		ITypeBinding itb = inv.resolveMethodBinding().getDeclaringClass();
-		IPackageBinding ipb = itb.getPackage();
-		String methodName = getFullName(inv);
-		
-		MyMethod m = methodList.get(methodName);
-		MyPackage p = packageList.get(ipb.getName());
-		MyClass c = classList.get(itb.getQualifiedName());
-		
-
-		
-		if(p==null){
-//			p = new MyPackage(ipb.getName(), true);
-			p = makeHeierarchy(ipb.getNameComponents(), p);
-		}
-		
-		if(c==null){
-			c = new MyClass(itb.getQualifiedName(), p);
-		}
-		
-		if(m==null){
-			m = new MyMethod(c.getID() + "." + methodName, true);
-		}
-		
-		m.setParent(c);
-		if(!contain(c, m)) c.addMethod(m);
-		if(!contain(p, c)) p.addClassChild(c);
-		
-		classWrapper.putEntity(c.getID(), c);
-//		classList.put(c.getID(), c);
-//		methodList.put(m.getID(), m);
-		return m;
-	}
+//	private MyMethod makeLibHierarchy(MethodInvocation inv){
+//		ITypeBinding itb = inv.resolveMethodBinding().getDeclaringClass();
+//		IPackageBinding ipb = itb.getPackage();
+//		String methodName = getFullName(inv);
+//		
+//		MyMethod m = methodList.get(methodName);
+//		MyPackage p = packageList.get(ipb.getName());
+//		MyClass c = classList.get(itb.getQualifiedName());
+//		
+//
+//		
+//		if(p==null){
+////			p = new MyPackage(ipb.getName(), true);
+//			p = makeHeierarchy(ipb.getNameComponents(), p);
+//		}
+//		
+//		if(c==null){
+//			c = new MyClass(itb.getQualifiedName(), p);
+//		}
+//		
+//		if(m==null){
+//			m = new MyMethod(c.getID() + "." + methodName, true);
+//		}
+//		
+//		m.setParent(c);
+//		if(!contain(c, m)) c.addMethod(m);
+//		if(!contain(p, c)) p.addClassChild(c);
+//		
+//		classWrapper.putEntity(c.getID(), c);
+////		classList.put(c.getID(), c);
+////		methodList.put(m.getID(), m);
+//		return m;
+//	}
 	
 	private MyPackage makeHeierarchy(String[] parents, MyPackage cur){
 		String tmp = "";
@@ -1221,7 +1205,7 @@ public class Repo {
 	
 	
 
-	public void makeEnumNode(Repo repo, MyPackage pack, EnumDeclaration enumDeclaration, IPackageFragment mypackage) {
+	public MyClass makeEnumNode(Repo repo, MyPackage pack, EnumDeclaration enumDeclaration, IPackageFragment mypackage) {
 		MyClass classChild;
 		MyMethod method;
 		
@@ -1243,6 +1227,8 @@ public class Repo {
 				throw e;
 			}
 		}
+		
+		return classChild;
 		
 	}
 
@@ -1269,7 +1255,7 @@ public class Repo {
 			}
 		}
 		classWrapper.putEntity(fullName, newClass);
-//		classList.put(fullName, newClass);
+		this.classList.put(newClass.getID(), new MyClass(newClass.getID(), newClass.getDeclaration(), newClass.isInterface()));
 		return newClass;
-	} 
+	}
 }

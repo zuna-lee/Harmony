@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 
+import zuna.model.wrapper.FieldWrapper;
+
 
 public class MyField extends Element implements Serializable {
 
@@ -24,19 +26,9 @@ public class MyField extends Element implements Serializable {
 		this.fd = fd;
 	}
 	
-	
-	
-	public void setParent(MyClass parent) {
-		this.parent = parent;
-	}
-
-
-
 	public FieldDeclaration getFd() {
 		return fd;
 	}
-
-
 
 	public String getType() {
 		return type;
@@ -50,7 +42,8 @@ public class MyField extends Element implements Serializable {
 		return refMethod;
 	}
 	
-	public void addReferencingMethod(MyMethod m){
-		this.refMethod.add(m);
-	}
+//	public void addReferencingMethod(MyMethod m){
+////		this.refMethod.add(m);
+//		FieldWrapper.addReferencingMethod(this, m);
+//	}
 }

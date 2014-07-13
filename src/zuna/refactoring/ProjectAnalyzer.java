@@ -40,8 +40,8 @@ public class ProjectAnalyzer{
 		ProjectAnalyzer.iproject = iproject;
 		ProjectAnalyzer.prjName = iproject.getName();
 		
-		Repo iRepo = new Repo(ProjectAnalyzer.iproject.getName());
-		ProjectAnalyzer.url = ProjectAnalyzer.iproject.getLocationURI().getPath().toString().substring(1);
+		Repo iRepo = new Repo(ProjectAnalyzer.iproject.getName(), ProjectAnalyzer.url);
+		
  		MyPackage root = new MyPackage("ROOT", true); 
  		
  		try {
@@ -57,7 +57,7 @@ public class ProjectAnalyzer{
  			
             IRunnableWithProgress entity = new EntityAnalyzerProgress(iRepo, packages);
             new ProgressMonitorDialog(new Shell()).run(true, true, entity);
- 			
+            
  		} catch (CoreException e) {
  		    e.printStackTrace();
  		} catch (InvocationTargetException ex) {

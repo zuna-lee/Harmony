@@ -13,11 +13,12 @@ public class DBConnector {
 		return conn;
 	}
 
-	public static void getConnection(DBInfo dbInfo){
+	public static void getConnection(String db){
 		
 			try {
-				Class.forName("com.mysql.jdbc.Driver");
-				conn= DriverManager.getConnection(dbInfo.getUrl(),dbInfo.getId(),dbInfo.getPassword());
+				Class.forName("org.sqlite.JDBC");
+//				conn= DriverManager.getConnection("jdbc:sqlite:test.db");
+				conn= DriverManager.getConnection(db);
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			} catch (SQLException e) {
