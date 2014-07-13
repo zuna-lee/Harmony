@@ -2,10 +2,6 @@ package zuna.model;
 
 
 
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -84,7 +80,6 @@ import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 
-import snaq.db.ConnectionPool;
 import zuna.db.DBConnector;
 import zuna.metric.classDS.InformationContents;
 import zuna.metric.classDS.InheritanceBasedDS;
@@ -893,19 +888,6 @@ public class Repo {
 		InheritanceBasedDS.max = -1;
 		String db = "jdbc:sqlite:" + path + "\\" + name +".db";
 		DBConnector.getConnection(db);
-//		try {
-//			Class c = Class.forName("org.sqlite.JDBC");
-//			Connection conn= DriverManager.getConnection(db);
-//			Driver driver = (Driver)c.newInstance();
-//			DriverManager.registerDriver(driver);
-//			DBConnector.pool = new ConnectionPool("local",
-//			        5, 10, 30, 180, db, "", "");
-//			
-//		} catch (ClassNotFoundException | SQLException | InstantiationException | IllegalAccessException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		
 		
 		classWrapper = new ClassWrapper();
 		methodWrapper = new MethodWrapper();
@@ -920,8 +902,7 @@ public class Repo {
 
 	
 	public MyClass makeClassNode(MyPackage pack, TypeDeclaration typeDeclaration, 
-			CompilationUnit cu, IPackageFragment mypackage) throws JavaModelException, Exception {
-		
+				CompilationUnit cu, IPackageFragment mypackage) throws JavaModelException, Exception {
 		
 		MyClass classChild;
 		MyMethod method;
@@ -962,7 +943,6 @@ public class Repo {
 		final Hashtable<String, SimpleName> reference = new Hashtable<String, SimpleName>();
 		
 		md.accept(new ASTVisitor(){
-			
 			@Override
 			public boolean visit(MethodInvocation invo){
 				methods.add(invo);
@@ -1004,8 +984,8 @@ public class Repo {
 				if(repo.fieldList.containsKey(fieldKey)) {
 					MyField f = repo.fieldList.get(fieldKey);
 					referredFields.add(f);
-					
 					repo.fieldList.put(fieldKey, f);
+					
 				}
 			}else if(md.getParent() instanceof EnumDeclaration){
 				EnumDeclaration type = (EnumDeclaration ) md.getParent();
@@ -1030,8 +1010,6 @@ public class Repo {
 			}
 		}
 		this.methodWrapper.addReferredField(method, referredFields);
-		
-		
 		
 		for (MethodInvocation mdi : methods) {
 			try {

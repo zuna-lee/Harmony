@@ -1,6 +1,5 @@
 package zuna.model.wrapper;
 
-import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +11,7 @@ import zuna.model.MyParameter;
 public class ParameterWrapper  extends Wrapper{
 
 	public ParameterWrapper(){
-		super.dropTable(super.PARAMETER);
+		super.dropTable(Wrapper.PARAMETER);
 		this.createTable();
 	}
 	
@@ -24,7 +23,7 @@ public class ParameterWrapper  extends Wrapper{
 			
 			this.getFields(fields);
 			this.getValues(values, o);
-			super.saveEntity(super.PARAMETER, fields, values);
+			super.saveEntity(Wrapper.PARAMETER, fields, values);
 			
 		}catch(Exception e){
 			e.printStackTrace(System.err);
@@ -53,10 +52,10 @@ public class ParameterWrapper  extends Wrapper{
 
 	@Override
 	protected void createTable() {
-		// TODO Auto-generated method stub
+		
 		try{ 
 			Statement stmt = DBConnector.getConn().createStatement();
-			String sql = "CREATE TABLE "+super.PARAMETER+
+			String sql = "CREATE TABLE "+ Wrapper.PARAMETER +
 	                   " (id VARCHAR(200) PRIMARY KEY     NOT NULL," +
 	                   " type           VARCHAR(200)    NOT NULL, " + 
 	                   " parent            VARCHAR(200)     NOT NULL)";
@@ -66,6 +65,7 @@ public class ParameterWrapper  extends Wrapper{
 	      System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 	      System.exit(0);
 	    }
+		
 	}
 	
 }

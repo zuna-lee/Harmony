@@ -22,5 +22,4 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .,
  lib/tml-cmm-3.2.jar,
  lib/sqlite-jdbc-3.7.2.jar,
- lib/dbpool-6.0.jar,
- lib/slf4j-api-1.7.7.jar
+ lib/sqlite-connection-pool_v1.1.0.jar

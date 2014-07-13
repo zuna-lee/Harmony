@@ -47,10 +47,12 @@ public class MethodWrapper extends Wrapper{
 
 	public void addReferredField(MyMethod owner, ArrayList<MyField> ownees) {
 		super.saveRelationship(Wrapper.REFERED_FIELD, owner.getID(), super.convert(ownees));
+		super.saveRelationshipInverse(Wrapper.REFERED_METHOD, owner.getID(), super.convert(ownees));
 	}
 	
 	public void addFanoutMethod(MyMethod owner, ArrayList<MyMethod> ownees) {
 		super.saveRelationship(Wrapper.FAN_OUT, owner.getID(), super.convert(ownees));
+		super.saveRelationshipInverse(Wrapper.FAN_IN, owner.getID(), super.convert(ownees));
 	}
 	
 	private void getValues(ArrayList<Object> values, MyMethod o) {

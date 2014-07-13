@@ -157,10 +157,12 @@ public class ClassWrapper extends Wrapper{
 
 	public void addUsesClasses(MyClass owner, ArrayList<MyClass> ownees) {
 		super.saveRelationship(Wrapper.USES_CLASS, owner.getID(), super.convert(ownees));
+		super.saveRelationshipInverse(Wrapper.USED_CLASS, owner.getID(), super.convert(ownees));
 	}
 	
 	public void addInterfaces(MyClass c, ArrayList<MyClass> interfaces) {
 		super.saveRelationship(Wrapper.INTERFACE, c.getID(), super.convert(interfaces));
+		super.saveRelationshipInverse(Wrapper.IMPLEMENTED_CLASS, c.getID(), super.convert(interfaces));
 	}
 	
 }

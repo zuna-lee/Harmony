@@ -115,6 +115,27 @@ public abstract class Wrapper {
 	    }
 	}
 	
+	protected void saveRelationshipInverse(String type, String owner, ArrayList<String> ownees){
+		final String tableName = type;
+		try{
+			String sql = " insert into " + tableName + "(master, slave) values (?, ?)";
+			PreparedStatement pstmt = DBConnector.getConn().prepareStatement(sql);
+			
+			for(String ownee: ownees){
+				pstmt.setString(1, ownee);
+				pstmt.setString(2, owner);
+				pstmt.addBatch();
+			}
+			
+			pstmt.executeBatch();
+			pstmt.close();
+		    
+	    }catch(Exception e){
+	    	System.out.println("error ---- " + tableName + "/" + e.getMessage());
+	    }
+	}
+	
+	
 	protected void dropTable(String tableName){
 		try{ 
 			Statement stmt = DBConnector.getConn().createStatement();
