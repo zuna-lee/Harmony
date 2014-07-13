@@ -2,6 +2,10 @@ package zuna.model;
 
 
 
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -41,7 +45,6 @@ import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.InfixExpression;
@@ -81,6 +84,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 
+import snaq.db.ConnectionPool;
 import zuna.db.DBConnector;
 import zuna.metric.classDS.InformationContents;
 import zuna.metric.classDS.InheritanceBasedDS;
@@ -887,7 +891,21 @@ public class Repo {
 	public void init() {
 		InformationContents.maxIC = 0.0;
 		InheritanceBasedDS.max = -1;
-		DBConnector.getConnection("jdbc:sqlite:" + path + "\\" + name +".db");
+		String db = "jdbc:sqlite:" + path + "\\" + name +".db";
+		DBConnector.getConnection(db);
+//		try {
+//			Class c = Class.forName("org.sqlite.JDBC");
+//			Connection conn= DriverManager.getConnection(db);
+//			Driver driver = (Driver)c.newInstance();
+//			DriverManager.registerDriver(driver);
+//			DBConnector.pool = new ConnectionPool("local",
+//			        5, 10, 30, 180, db, "", "");
+//			
+//		} catch (ClassNotFoundException | SQLException | InstantiationException | IllegalAccessException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
 		
 		classWrapper = new ClassWrapper();
 		methodWrapper = new MethodWrapper();

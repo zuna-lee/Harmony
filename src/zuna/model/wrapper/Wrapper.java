@@ -180,8 +180,6 @@ public abstract class Wrapper {
 			String sql = "Update " + tableName +
 	                   " set superClass = \'"+ updateValue  + "\'" +
 	                   " where id = \'" + condition + "\'";
-			
-			System.out.println(sql);
 			stmt.executeUpdate(sql);
 		    stmt.close();
 	    } catch ( Exception e ) {

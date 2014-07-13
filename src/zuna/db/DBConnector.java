@@ -5,9 +5,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 
+
 public class DBConnector {
 	private static Connection conn;
-
+//	public static ConnectionPool pool;
 
 	public static Connection getConn() {
 		return conn;
