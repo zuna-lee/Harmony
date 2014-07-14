@@ -1,7 +1,9 @@
 package zuna.refactoring.ui.actions;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.File;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IAdaptable;
@@ -15,10 +17,7 @@ import org.eclipse.ui.PlatformUI;
 
 import zuna.metric.classDS.ArchitectureBasedDS;
 import zuna.metric.classDS.InformationContents4System;
-import zuna.metric.coupling.CBO;
-import zuna.model.MyClass;
 import zuna.refactoring.ProjectAnalyzer;
-import zuna.util.Logger2File;
 
 @SuppressWarnings("restriction")
 public class Harmony implements IWorkbenchWindowActionDelegate {
@@ -60,26 +59,7 @@ public class Harmony implements IWorkbenchWindowActionDelegate {
 	            icCalcul.calculateIC();
 	            new ArchitectureBasedDS();
 	            
-	            HashMap<String, MyClass> classList = ProjectAnalyzer.project.getClassList();
-	            
-	            ArrayList<String> metric = new ArrayList<String>();
-//	            FCM_Distance fcm = new FCM_Distance(ProjectAnalyzer.project);
-//            	LSCC lscc = new LSCC(ProjectAnalyzer.project);
-//            	C3 c3 = new C3(ProjectAnalyzer.project);
-	            
-            	CBO cbo = new CBO(ProjectAnalyzer.project);
-	            for(String key: classList.keySet()){
-	            	MyClass c = classList.get(key);
-	            	
-	            	if(!c.isLibrary()){
-	            		metric.add(c.getID() + ":" +  c.getOwnedMethods().size() + ":" + c.getOwendField().size() + ":" +
-	            				cbo.getMetric(c));
-	            	}
-	            	
-	            }
-	            
-	            Logger2File.print2CSVFile(metric, project.getName());
-	            
+	            doTask();
 	            
 			}catch(java.lang.NullPointerException e){
 				e.printStackTrace();
@@ -94,6 +74,20 @@ public class Harmony implements IWorkbenchWindowActionDelegate {
 		ProjectAnalyzer.firstElement=null;
 	}
     
+    
+    private void doTask(){
+		try {
+			
+			URL bin = new File("C:\\Users\\zuna\\Documents\\GitHub\\APP-1\\bin").toURL();
+			Class<?> c = new URLClassLoader(new URL[] { bin }).loadClass("task.MetricTask");
+			Object o = c.newInstance();
+			Method m = c.getMethod("doTask", (Class[]) null);
+			m.invoke(o, (Object[]) null);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
     
 	private String getClassID(CompilationUnit cu) {
 		String classID = cu.getPath().toString().replace(cu.getPackageFragmentRoot().getPath().toString() + "/", "");

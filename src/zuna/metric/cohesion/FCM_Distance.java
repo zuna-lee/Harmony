@@ -6,13 +6,13 @@ import zuna.metric.Metric;
 import zuna.metric.classDS.ArchitectureBasedDS;
 import zuna.model.MyClass;
 import zuna.model.MyMethod;
-import zuna.model.Repo;
+import zuna.model.Repository;
 import zuna.refactoring.ProjectAnalyzer;
 import zuna.util.KeyMaker;
 
 public class FCM_Distance extends Metric{
 
-	public FCM_Distance(Repo p) {
+	public FCM_Distance(Repository p) {
 		super(p);
 	}
 

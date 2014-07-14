@@ -7,12 +7,12 @@ import zuna.metric.Metric;
 import zuna.model.MyClass;
 import zuna.model.MyField;
 import zuna.model.MyMethod;
-import zuna.model.Repo;
+import zuna.model.Repository;
 
 
 public class LCOM2 extends Metric{
 
-	public LCOM2(Repo p) {
+	public LCOM2(Repository p) {
 		super(p);
 		// TODO Auto-generated constructor stub
 	}

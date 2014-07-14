@@ -5,12 +5,12 @@ import java.util.Hashtable;
 
 import zuna.metric.Metric;
 import zuna.model.MyClass;
-import zuna.model.Repo;
+import zuna.model.Repository;
 
 
 public class CBO extends Metric{
 
-	public CBO(Repo p) {
+	public CBO(Repository p) {
 		super(p);
 		// TODO Auto-generated constructor stub
 	}

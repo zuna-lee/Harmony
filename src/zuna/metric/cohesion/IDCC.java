@@ -6,11 +6,11 @@ import zuna.metric.Metric;
 import zuna.metric.similarity.methodlevel.IDC;
 import zuna.model.MyClass;
 import zuna.model.MyMethod;
-import zuna.model.Repo;
+import zuna.model.Repository;
 
 public class IDCC extends Metric{
 
-	public IDCC(Repo p) {
+	public IDCC(Repository p) {
 		super(p);
 		// TODO Auto-generated constructor stub
 	}

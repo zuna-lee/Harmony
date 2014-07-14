@@ -10,7 +10,7 @@ import zuna.metric.Metric;
 import zuna.model.MyClass;
 import zuna.model.MyField;
 import zuna.model.MyMethod;
-import zuna.model.Repo;
+import zuna.model.Repository;
 
 public class FCM_Iterative extends Metric{
 
@@ -21,7 +21,7 @@ public class FCM_Iterative extends Metric{
 	private Hashtable<Integer, ArrayList<MyMethod>> components = new Hashtable<Integer, ArrayList<MyMethod>>();
 	
 	
-	public FCM_Iterative(Repo p) {
+	public FCM_Iterative(Repository p) {
 		super(p);
 	}
 

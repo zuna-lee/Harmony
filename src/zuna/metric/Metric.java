@@ -1,12 +1,13 @@
 package zuna.metric;
 
 import zuna.model.MyClass;
-import zuna.model.Repo;
+import zuna.model.Repository;
 
 public abstract class Metric {
-	protected Repo p;
+	protected Repository p;
 	protected int methodPairCnt;
-	protected Metric(Repo p){
+	
+	protected Metric(Repository p){
 		this.p = p;
 	}
 	

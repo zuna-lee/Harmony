@@ -14,19 +14,18 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 
-import zuna.model.EntityAnalyzerProgress;
 import zuna.model.MyClass;
 import zuna.model.MyField;
 import zuna.model.MyMethod;
 import zuna.model.MyPackage;
-import zuna.model.Repo;
+import zuna.model.Repository;
 
 public class ProjectAnalyzer{
 	public static IProject iproject;
 	public static Hashtable<String, Metric> metrics = new Hashtable<String, Metric>();
-	public static Repo project;
+	public static Repository project;
 	public static String prjName;
-	public static Repo mutatedProject;
+	public static Repository mutatedProject;
 	public static ArrayList<String> mutatedPair = new ArrayList<String>();
 	public static String url;
 	public static ArrayList<String> left = new ArrayList<String>();
@@ -40,7 +39,7 @@ public class ProjectAnalyzer{
 		ProjectAnalyzer.iproject = iproject;
 		ProjectAnalyzer.prjName = iproject.getName();
 		
-		Repo iRepo = new Repo(ProjectAnalyzer.iproject.getName());
+		Repository iRepo = new Repository(ProjectAnalyzer.iproject.getName());
 		ProjectAnalyzer.url = ProjectAnalyzer.iproject.getLocationURI().getPath().toString().substring(1);
  		MyPackage root = new MyPackage("ROOT", true); 
  		

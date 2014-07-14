@@ -6,17 +6,17 @@ import zuna.metric.Metric;
 import zuna.model.MyClass;
 import zuna.model.MyField;
 import zuna.model.MyMethod;
-import zuna.model.Repo;
+import zuna.model.Repository;
 
 public class LSCC extends Metric{
 
 	private ArrayList<MyField> fields = new ArrayList<MyField>();
 	
-	public LSCC(Repo p) {
+	public LSCC(Repository p) {
 		super(p);
 	}
 
-	public LSCC(Repo p, MyClass c) {
+	public LSCC(Repository p, MyClass c) {
 		super(p);
 		this.fields = c.getOwendField();
 	}

@@ -14,24 +14,23 @@ import tml.corpus.Corpus;
 import tml.corpus.CorpusParameters.DimensionalityReduction;
 import tml.corpus.CorpusParameters.TermSelection;
 import tml.corpus.RepositoryCorpus;
-import tml.storage.Repository;
 import tml.vectorspace.TermWeighting.GlobalWeight;
 import tml.vectorspace.TermWeighting.LocalWeight;
 import tml.vectorspace.operations.PassagesSimilarity;
 import zuna.metric.Metric;
 import zuna.model.MyClass;
 import zuna.model.MyMethod;
-import zuna.model.Repo;
+import zuna.model.Repository;
 import Jama.Matrix;
 
 public class C3 extends Metric{
 
-	protected static Repository repository;
+	protected static tml.storage.Repository repository;
 	protected static Properties prop;
 	private static PassagesSimilarity distance;
 	public static Hashtable<String, Double> msTable = new Hashtable<String, Double>();
 	
-	public C3(Repo p){
+	public C3(Repository p){
 		super(p);
 		msTable.clear();
 		try {
@@ -43,7 +42,7 @@ public class C3 extends Metric{
 		
 	}
 
-	public C3(Repo p, MyClass c){
+	public C3(Repository p, MyClass c){
 		super(p);
 		msTable.clear();
 		this.getMetric(c);
@@ -60,8 +59,8 @@ public class C3 extends Metric{
 	public double getMetric(MyClass c) {
 		double values = 0.0;
 		try {
-				Repository.cleanStorage(Configuration.getTmlFolder() + "/test/lucene");
-				repository = new Repository(Configuration.getTmlFolder() + "/test/lucene");
+				tml.storage.Repository.cleanStorage(Configuration.getTmlFolder() + "/test/lucene");
+				repository = new tml.storage.Repository(Configuration.getTmlFolder() + "/test/lucene");
 				repository.addMethods(c);
 				
 				Corpus corpus = new RepositoryCorpus();
@@ -119,7 +118,6 @@ public class C3 extends Metric{
 				fw.write(m.getID() + "\n" + m.getMd().toString());
 				fw.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} 
 		}

@@ -7,7 +7,7 @@ import zuna.metric.Metric;
 import zuna.model.MyClass;
 import zuna.model.MyField;
 import zuna.model.MyMethod;
-import zuna.model.Repo;
+import zuna.model.Repository;
 
 public class LCOM3 extends Metric {
 
@@ -16,7 +16,7 @@ public class LCOM3 extends Metric {
 	private boolean[] visited;
 	private int numOfComponents;
 
-	public LCOM3(Repo p) {
+	public LCOM3(Repository p) {
 		super(p);
 	}
 

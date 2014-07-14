@@ -7,7 +7,7 @@ import zuna.metric.Metric;
 import zuna.model.MyClass;
 import zuna.model.MyField;
 import zuna.model.MyMethod;
-import zuna.model.Repo;
+import zuna.model.Repository;
 
 
 public class TCC extends Metric{
@@ -15,7 +15,7 @@ public class TCC extends Metric{
 	private static Hashtable<String, MyField> fields = new Hashtable<String, MyField>();
 	private static Hashtable<String, String> temp = new Hashtable<String, String>();
 	
-	public TCC(Repo p) {
+	public TCC(Repository p) {
 		super(p);
 	}
 

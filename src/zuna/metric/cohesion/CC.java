@@ -7,13 +7,13 @@ import zuna.metric.Metric;
 import zuna.metric.similarity.methodlevel.IAS;
 import zuna.model.MyClass;
 import zuna.model.MyMethod;
-import zuna.model.Repo;
+import zuna.model.Repository;
 
 
 public class CC extends Metric{
 	private IAS ias = new IAS();
 	
-	public CC(Repo p) {
+	public CC(Repository p) {
 		super(p);
 	}
 

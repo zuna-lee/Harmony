@@ -6,12 +6,12 @@ import java.util.Hashtable;
 import zuna.metric.Metric;
 import zuna.model.MyClass;
 import zuna.model.MyMethod;
-import zuna.model.Repo;
+import zuna.model.Repository;
 
 
 public class RFC extends Metric{
 
-	public RFC(Repo p) {
+	public RFC(Repository p) {
 		super(p);
 		// TODO Auto-generated constructor stub
 	}
